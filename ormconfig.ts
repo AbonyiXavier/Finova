@@ -3,6 +3,10 @@ dotenv.config();
 
 import { ConnectionOptions } from 'typeorm';
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
+import { Account } from './src/domain/account/entities/account.entity';
+import { Card } from './src/domain/card/entities/card.entity';
+import { Company } from './src/domain/company/entities/company.entity';
+import { Transaction } from './src/domain/transaction/entities/transaction.entity';
 
 const qred_db = JSON.parse(`${process.env.DATABASE_CREDENTIALS}`);
 const currentEnv = `${process.env.NODE_ENV}`;
@@ -17,8 +21,8 @@ export default {
   logging: ['development'].includes(currentEnv) ? true : ['error'],
   schema: 'public',
   dropSchema: false,
-  synchronize: false,
-  entities: ['dist/src/**/*.entity.js'],
+  synchronize: true,
+  entities: [Account, Card, Company, Transaction],
   namingStrategy: new SnakeNamingStrategy(),
   migrations: ['dist/src/database/migrations/*.js'],
   cli: {
