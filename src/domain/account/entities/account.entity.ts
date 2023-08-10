@@ -8,15 +8,17 @@ import { Transaction } from '../../transaction/entities/transaction.entity';
 
 @Entity(TABLES.account)
 export class Account extends BaseModel {
-  @Column()
+  @Column({ nullable: true })
   accountNumber: string;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: true })
   balance: number;
 
   @Column({
     type: 'enum',
     enum: CurrencyType,
+    default: CurrencyType.KR,
+    nullable: true,
   })
   currency: CurrencyType;
 

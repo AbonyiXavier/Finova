@@ -2,24 +2,24 @@ import { CreateDateColumn, PrimaryGeneratedColumn, UpdateDateColumn, Column, Del
 
 export abstract class BaseModel {
   @PrimaryGeneratedColumn('uuid')
-  id?: string;
+  id: string;
 
   @CreateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt?: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
-  updatedAt?: Date;
+  updatedAt: Date;
 
   @Column({ nullable: true })
-  createdBy?: string;
+  createdBy: string;
 
   @Column({ nullable: true })
-  updatedBy?: string;
+  updatedBy: string;
 
   @Index()
   @DeleteDateColumn({ nullable: true })
-  deletedAt?: Date;
+  deletedAt: Date;
 
   @Column({ nullable: true })
-  deletedBy?: string;
+  deletedBy: string;
 }

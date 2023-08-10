@@ -19,6 +19,7 @@ export class Company extends BaseModel {
   @Column({
     type: 'enum',
     enum: CompanyStatus,
+    default: CompanyStatus.ACTIVE,
   })
   status: CompanyStatus;
 

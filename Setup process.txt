@@ -62,3 +62,6 @@ Done block
   Relationship
 
   
+
+  create a company and account with a default balance for them
+  

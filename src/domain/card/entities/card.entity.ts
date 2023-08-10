@@ -29,22 +29,24 @@ export class Card extends BaseModel {
   @Column({
     type: 'enum',
     enum: CardStatus,
+    default: CardStatus.PENDING,
   })
   status: CardStatus;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: true })
   remainingSpend: number;
 
-  @Column({ default: 0 })
+  @Column({ default: 0, nullable: true })
   spendingLimit: number;
 
   @Column({
     type: 'enum',
     enum: SpendingLimitInterval,
+    nullable: true,
   })
   spendingLimitInterval: SpendingLimitInterval;
 
-  @Column()
+  @Column({ nullable: true })
   spendingLimitDate: Date;
 
   @ManyToOne(() => Account, (account) => account.cards)
