@@ -1,0 +1,64 @@
+Setup process
+
+Nodejs - Typescript
+
+
+- create entities and relationships
+- generate migrations
+
+
+Done block
+
+- have a eslint and prettier configured
+- have husky configured
+- have winston logger
+- have typeORM 
+- pg connection and entities and relationships
+- have a dist folder
+- have a jest config
+- have a Makefile
+
+
+- project setup ideas
+
+   - src
+     - domain
+        - account  -- has many cards[] -- belongs to a company
+            - repository   
+               - interfaces
+            - services
+        - card  -- belongs to account --- belongs to company
+             - repository   
+               - interfaces
+             - services
+        - company  --- has many accounts[] --- has many cards[]
+              - repository   
+               - interfaces
+              - services
+        - transaction  --- belongs to card  --- belongs to account
+              - repository   
+               - interfaces
+              - services
+     - common
+         - shared folder
+           - logger.ts
+     - database 
+         -  migration
+     - config
+        env.validation.ts
+
+    - test
+
+
+    Relationship
+
+    company can have more than one cards[] but each card belongs or is handled by only one company
+    company can have more than one accounts[] but each account belongs or is handled by only one company
+
+    company - oneToMany for cards and accounts
+    card and account - manyToOne
+
+
+  Relationship
+
+  

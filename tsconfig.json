@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+      "module": "commonjs",
+      "moduleResolution": "Node",
+      "sourceMap": true,
+      "target":"es2021",
+      "lib": ["es2021", "es6"],
+      "esModuleInterop": true,
+      "outDir": "./dist",
+      "baseUrl": "./",
+      "strict": true,
+      "types": ["node","jest",],
+      "noImplicitAny": false,
+      "alwaysStrict": true,
+      "resolveJsonModule": true,
+      "skipLibCheck": true,
+      "noFallthroughCasesInSwitch": false,
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "strictPropertyInitialization": false,
+    },
+    "exclude": ["node_modules"],
+  } 
