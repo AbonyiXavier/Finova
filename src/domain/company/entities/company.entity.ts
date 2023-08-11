@@ -32,6 +32,6 @@ export class Company extends BaseModel {
   @OneToMany(() => Account, (account) => account.company)
   accounts: Account[];
 
-  @OneToMany(() => Card, (card) => card.account)
+  @OneToMany(() => Card, (card) => card.company)
   cards: Card[];
 }

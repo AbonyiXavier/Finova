@@ -1,20 +1,20 @@
 import { getRepository } from 'typeorm';
 import logger from '../../../common/shared/logger';
-import { findAccountById } from '../../account/repository/account.repository';
-import { findCompanyById } from '../../company/repository/company.repository';
+import { findAccountByIdRepository } from '../../account/repository/account.repository';
+import { findCompanyByIdRepository } from '../../company/repository/company.repository';
 import { Card } from '../entities/card.entity';
-import { fetchCardContextResult } from '../types';
+import { fetchCardContextRepositoryResult } from '../types';
 
-export const fetchCardContext = async (accountId: string, companyId: string): Promise<fetchCardContextResult> => {
+export const fetchCardContextRepository = async (accountId: string, companyId: string): Promise<fetchCardContextRepositoryResult> => {
   try {
     const cardRepository = getRepository(Card);
 
-    const account = await findAccountById(accountId);
-    const company = await findCompanyById(companyId);
+    const account = await findAccountByIdRepository(accountId);
+    const company = await findCompanyByIdRepository(companyId);
 
     return { account, company, cardRepository };
   } catch (error) {
-    logger.error('fetchCardContext failed', error);
+    logger.error('fetchCardContextRepository failed', error);
     throw error;
   }
 };

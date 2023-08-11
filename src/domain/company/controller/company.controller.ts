@@ -8,16 +8,22 @@ import { computeCardExpiryYear, encryptCardPin, generateAccountNumber, generateC
 import { DEFAULT_CREDITED_BALANCE, DEFAULT_PIN } from '../../../common/shared/constant';
 import { Card } from '../../card/entities/card.entity';
 import { CardType } from '../../card/enums';
-import { checkDuplicateCompanyName } from '../repository/company.repository';
+import {
+  checkDuplicateCompanyNameRepository,
+  findCompanyByIdRepository,
+  retrieveCompaniesPaginatedAndSearchRepository,
+  retrieveCompanyAndSearchRepository,
+} from '../repository/company.repository';
 import { CurrencyType } from '../../account/enums';
 import { TransactionStatus, TransactionType } from '../../transaction/enums';
 import { Transaction } from '../../transaction/entities/transaction.entity';
+import { PaginationArgs } from '../../../common/shared/types';
 
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, companyAddress, yearFounded } = req.body;
 
   try {
-    const existingCompany = await checkDuplicateCompanyName(companyName);
+    const existingCompany = await checkDuplicateCompanyNameRepository(companyName);
 
     if (existingCompany) {
       return res.status(StatusCodes.CONFLICT).send({
@@ -80,6 +86,62 @@ export const createCompany = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('createCompany failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const getCompanyById = async (req: Request, res: Response) => {
+  const { companyId } = req.params;
+  const { searchText } = req.query;
+  const searchInput = searchText ? { searchText: searchText.toString() } : undefined;
+
+  try {
+    const cmpy = await findCompanyByIdRepository(companyId);
+
+    if (!cmpy) {
+      return res.status(StatusCodes.NOT_FOUND).send({
+        status: false,
+        message: 'Compony not found.',
+        data: null,
+      });
+    }
+
+    const company = await retrieveCompanyAndSearchRepository(companyId, searchInput);
+
+    return res.status(StatusCodes.OK).send({
+      status: true,
+      message: 'Company fetched successfully',
+      data: company,
+    });
+  } catch (error: any) {
+    logger.error('getCompanyById failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const fetchCompanies = async (req: Request, res: Response) => {
+  const { searchText, limit, offset } = req.query;
+  const searchInput = searchText ? { searchText: searchText.toString() } : undefined;
+  const paginationArgs = { limit, offset } as unknown as PaginationArgs;
+
+  try {
+    const company = await retrieveCompaniesPaginatedAndSearchRepository(paginationArgs, searchInput);
+
+    return res.status(StatusCodes.OK).send({
+      status: true,
+      message: 'Company fetched successfully',
+      data: company,
+    });
+  } catch (error: any) {
+    logger.error('getCompanyById failed', error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       status: false,
       message: error?.message,

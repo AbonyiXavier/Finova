@@ -1,7 +1,7 @@
 import bcrypt from 'bcrypt';
 import { addYears } from 'date-fns';
 import { NUMBER_OF_CARD_EXPIRY_YEAR } from './shared/constant';
-import { checkExistingAccountNumber } from '../domain/account/repository/account.repository';
+import { checkExistingAccountNumberRepository } from '../domain/account/repository/account.repository';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const randomstring = require('randomstring');
@@ -31,13 +31,13 @@ const generateAccountNumber = async () => {
   const prefix = '62';
   let accountNumberGenerated = `${prefix}${randomInteger(8)}`;
 
-  const existingAccountNumber = await checkExistingAccountNumber(accountNumberGenerated);
+  const existingAccountNumber = await checkExistingAccountNumberRepository(accountNumberGenerated);
 
   if (existingAccountNumber) {
     accountNumberGenerated = `${prefix}${randomInteger(8)}`;
   }
 
-  checkExistingAccountNumber(accountNumberGenerated);
+  checkExistingAccountNumberRepository(accountNumberGenerated);
   return accountNumberGenerated;
 };
 

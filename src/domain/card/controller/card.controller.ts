@@ -4,7 +4,7 @@ import logger from '../../../common/shared/logger';
 import { generateCardCvv, generateMasterCardNumber, generateVisaCardNumber, encryptCardPin, computeCardExpiryYear } from '../../../common/utils';
 import { DEFAULT_PIN } from '../../../common/shared/constant';
 import { CardType } from '../enums';
-import { fetchCardContext } from '../repository/card.repository';
+import { fetchCardContextRepository } from '../repository/card.repository';
 
 export const createCard = async (req: Request, res: Response) => {
   const { cardType, companyId, accountId } = req.body;
@@ -20,7 +20,7 @@ export const createCard = async (req: Request, res: Response) => {
 
     const data = cardNumberGenerator();
 
-    const { account, company, cardRepository } = await fetchCardContext(accountId, companyId);
+    const { account, company, cardRepository } = await fetchCardContextRepository(accountId, companyId);
 
     if (!account) {
       return res.status(StatusCodes.NOT_FOUND).send({

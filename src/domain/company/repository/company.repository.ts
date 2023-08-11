@@ -1,8 +1,10 @@
 import { getRepository } from 'typeorm';
 import { Company } from '../entities/company.entity';
 import logger from '../../../common/shared/logger';
+import { PaginationArgs, searchByInput } from '../../../common/shared/types';
+import { fetchCompanyResult } from '../types';
 
-export const checkDuplicateCompanyName = async (companyName: string): Promise<Company | undefined> => {
+export const checkDuplicateCompanyNameRepository = async (companyName: string): Promise<Company | undefined> => {
   try {
     const companyRepository = getRepository(Company);
 
@@ -12,12 +14,12 @@ export const checkDuplicateCompanyName = async (companyName: string): Promise<Co
 
     return existingCompany;
   } catch (error) {
-    logger.error('checkDuplicateCompanyName failed', error);
+    logger.error('checkDuplicateCompanyNameRepository failed', error);
     throw error;
   }
 };
 
-export const findCompanyById = async (companyId: string): Promise<Company | undefined> => {
+export const findCompanyByIdRepository = async (companyId: string): Promise<Company | undefined> => {
   try {
     const companyRepository = getRepository(Company);
 
@@ -27,7 +29,86 @@ export const findCompanyById = async (companyId: string): Promise<Company | unde
 
     return company;
   } catch (error) {
-    logger.error('findCompanyById failed', error);
+    logger.error('findCompanyByIdRepository failed', error);
+    throw error;
+  }
+};
+
+export const retrieveCompanyAndSearchRepository = async (companyId: string, searchInput?: searchByInput): Promise<Company | undefined> => {
+  try {
+    const companyRepository = getRepository(Company);
+
+    const query = companyRepository
+      .createQueryBuilder('company')
+      .leftJoinAndSelect('company.accounts', 'accounts')
+      .leftJoinAndSelect('company.cards', 'cards');
+
+    if (searchInput?.searchText) {
+      query.where('accounts.accountNumber = :searchText', {
+        searchText: searchInput.searchText,
+      });
+
+      // Search for cardNumber within the cards array
+      query.orWhere('cards.cardNumber = :searchText', {
+        searchText: searchInput.searchText,
+      });
+    }
+
+    query.andWhere('company.id = :companyId', { companyId });
+
+    const company = await query.getOne();
+
+    return company;
+  } catch (error) {
+    logger.error('retrieveCompanyRepository failed', error);
+    throw error;
+  }
+};
+
+export const retrieveCompaniesPaginatedAndSearchRepository = async (
+  paginationArgs: PaginationArgs,
+  searchInput?: searchByInput,
+): Promise<fetchCompanyResult> => {
+  const { limit, offset } = paginationArgs;
+
+  try {
+    const companyRepository = getRepository(Company);
+
+    const query = companyRepository
+      .createQueryBuilder('company')
+      .leftJoinAndSelect('company.accounts', 'accounts')
+      .leftJoinAndSelect('company.cards', 'cards');
+
+    if (searchInput?.searchText) {
+      query.where('company.companyName = :searchText', {
+        searchText: searchInput.searchText,
+      });
+
+      query.orWhere('company.companyAddress = :searchText', {
+        searchText: searchInput.searchText,
+      });
+    }
+
+    if (limit !== -1) {
+      query.limit(limit);
+      query.offset(offset ? offset * limit : 0);
+    }
+
+    const [items, totalCount] = await query.orderBy('company.created_at', 'DESC').getManyAndCount();
+
+    const totalPages = limit > 0 ? Math.ceil(totalCount / limit) : 1;
+    const currentPage = offset < totalPages ? offset + 1 : totalPages;
+    const nextPage = limit !== -1 && items.length >= limit;
+
+    return {
+      totalCount,
+      totalPages,
+      currentPage,
+      nextPage,
+      companies: items,
+    };
+  } catch (error) {
+    logger.error('retrieveCompaniesPaginatedAndSearchRepository failed', error);
     throw error;
   }
 };
