@@ -1,3 +1,4 @@
+import { Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
 
 export type fetchCompanyResult = {
@@ -6,4 +7,9 @@ export type fetchCompanyResult = {
   currentPage: number;
   nextPage: boolean;
   companies: Company[];
+};
+
+export type CompanyResultConfig = {
+  company: Company | undefined;
+  companyRepository: Repository<Company>;
 };

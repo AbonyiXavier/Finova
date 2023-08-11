@@ -1,8 +1,9 @@
-import { getRepository } from 'typeorm';
+import { IsNull, getRepository } from 'typeorm';
 import { Company } from '../entities/company.entity';
 import logger from '../../../common/shared/logger';
 import { PaginationArgs, searchByInput } from '../../../common/shared/types';
-import { fetchCompanyResult } from '../types';
+import { CompanyResultConfig, fetchCompanyResult } from '../types';
+import { CompanyStatus } from '../enums';
 
 export const checkDuplicateCompanyNameRepository = async (companyName: string): Promise<Company | undefined> => {
   try {
@@ -89,6 +90,8 @@ export const retrieveCompaniesPaginatedAndSearchRepository = async (
       });
     }
 
+    query.andWhere('company.status = :status', { status: CompanyStatus.ACTIVE });
+
     if (limit !== -1) {
       query.limit(limit);
       query.offset(offset ? offset * limit : 0);
@@ -109,6 +112,36 @@ export const retrieveCompaniesPaginatedAndSearchRepository = async (
     };
   } catch (error) {
     logger.error('retrieveCompaniesPaginatedAndSearchRepository failed', error);
+    throw error;
+  }
+};
+
+export const fetchActiveCompanyRepository = async (companyId: string): Promise<CompanyResultConfig> => {
+  try {
+    const companyRepository = getRepository(Company);
+
+    const company = await companyRepository.findOne({
+      where: { id: companyId, status: CompanyStatus.ACTIVE },
+    });
+
+    return { company, companyRepository };
+  } catch (error) {
+    logger.error('fetchActiveCompanyRepository failed', error);
+    throw error;
+  }
+};
+
+export const deactivateActiveCompanyRepository = async (companyId: string): Promise<CompanyResultConfig> => {
+  try {
+    const companyRepository = getRepository(Company);
+
+    const company = await companyRepository.findOne({
+      where: { id: companyId, status: CompanyStatus.ACTIVE, deletedAt: IsNull() },
+    });
+
+    return { company, companyRepository };
+  } catch (error) {
+    logger.error('deactivateActiveCompanyRepository failed', error);
     throw error;
   }
 };

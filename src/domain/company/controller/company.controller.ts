@@ -10,6 +10,7 @@ import { Card } from '../../card/entities/card.entity';
 import { CardType } from '../../card/enums';
 import {
   checkDuplicateCompanyNameRepository,
+  fetchActiveCompanyRepository,
   findCompanyByIdRepository,
   retrieveCompaniesPaginatedAndSearchRepository,
   retrieveCompanyAndSearchRepository,
@@ -18,6 +19,7 @@ import { CurrencyType } from '../../account/enums';
 import { TransactionStatus, TransactionType } from '../../transaction/enums';
 import { Transaction } from '../../transaction/entities/transaction.entity';
 import { PaginationArgs } from '../../../common/shared/types';
+import { CompanyStatus } from '../enums';
 
 export const createCompany = async (req: Request, res: Response) => {
   const { companyName, companyAddress, yearFounded } = req.body;
@@ -105,7 +107,7 @@ export const getCompanyById = async (req: Request, res: Response) => {
     if (!cmpy) {
       return res.status(StatusCodes.NOT_FOUND).send({
         status: false,
-        message: 'Compony not found.',
+        message: 'Company not found.',
         data: null,
       });
     }
@@ -142,6 +144,100 @@ export const fetchCompanies = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     logger.error('getCompanyById failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const updateCompany = async (req: Request, res: Response) => {
+  const { companyId } = req.params;
+  const { companyName, companyAddress, yearFounded } = req.body;
+
+  try {
+    const existingCompany = await checkDuplicateCompanyNameRepository(companyName);
+
+    if (existingCompany) {
+      return res.status(StatusCodes.CONFLICT).send({
+        status: false,
+        message: 'Company with the same name already exists.',
+        data: null,
+      });
+    }
+
+    const { company, companyRepository } = await fetchActiveCompanyRepository(companyId);
+
+    if (!company) {
+      return res.status(StatusCodes.NOT_FOUND).send({
+        status: false,
+        message: 'Active Company not found.',
+        data: null,
+      });
+    }
+
+    const newData = {
+      companyName,
+      companyAddress,
+      yearFounded,
+      updatedBy: companyId,
+    };
+
+    // Update the company properties
+    Object.assign(company, newData);
+
+    // Save the updated company
+    const updatedCompany = await companyRepository.save(company);
+
+    return res.status(StatusCodes.CREATED).send({
+      status: true,
+      message: 'Company data updated successfully',
+      data: updatedCompany,
+    });
+  } catch (error: any) {
+    logger.error('updateCompany failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const deactivateCompany = async (req: Request, res: Response) => {
+  const { companyId } = req.params;
+
+  try {
+    const { company, companyRepository } = await fetchActiveCompanyRepository(companyId);
+
+    if (!company) {
+      return res.status(StatusCodes.NOT_FOUND).send({
+        status: false,
+        message: 'Active Company not found.',
+        data: null,
+      });
+    }
+
+    const newData = {
+      status: CompanyStatus.DEACTIVATE,
+      deletedAt: new Date(),
+      deleteBy: companyId,
+    };
+
+    // Update the company properties
+    Object.assign(company, newData);
+
+    // Save the updated company
+    const updatedCompany = await companyRepository.save(company);
+
+    return res.status(StatusCodes.CREATED).send({
+      status: true,
+      message: 'Company deactivated successfully',
+      data: updatedCompany,
+    });
+  } catch (error: any) {
+    logger.error('deactivateCompany failed', error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       status: false,
       message: error?.message,
