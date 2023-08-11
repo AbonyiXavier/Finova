@@ -102,9 +102,9 @@ export const getCompanyById = async (req: Request, res: Response) => {
   const searchInput = searchText ? { searchText: searchText.toString() } : undefined;
 
   try {
-    const cmpy = await findCompanyByIdRepository(companyId);
+    const company = await findCompanyByIdRepository(companyId);
 
-    if (!cmpy) {
+    if (!company) {
       return res.status(StatusCodes.NOT_FOUND).send({
         status: false,
         message: 'Company not found.',
@@ -112,12 +112,12 @@ export const getCompanyById = async (req: Request, res: Response) => {
       });
     }
 
-    const company = await retrieveCompanyAndSearchRepository(companyId, searchInput);
+    const companyData = await retrieveCompanyAndSearchRepository(companyId, searchInput);
 
     return res.status(StatusCodes.OK).send({
       status: true,
       message: 'Company fetched successfully',
-      data: company,
+      data: companyData,
     });
   } catch (error: any) {
     logger.error('getCompanyById failed', error);

@@ -10,7 +10,7 @@ const envVariables = Joi.object()
   .keys({
     NODE_ENV: Joi.string().valid('production', 'development', 'staging').required(),
     PORT: Joi.number().positive().required(),
-    DATABASE_CREDENTIALS: Joi.string().required().description('Mongo DB url'),
+    DATABASE_CREDENTIALS: Joi.string().required().description('DATABASE_CREDENTIALS'),
   })
   .unknown();
 
@@ -23,5 +23,5 @@ if (error) {
 export default {
   NODE_ENV: envVariable.NODE_ENV,
   PORT: envVariable.PORT,
-  mongodb: envVariable.DATABASE_CREDENTIALS,
+  DATABASE_CREDENTIALS: envVariable.DATABASE_CREDENTIALS,
 };
