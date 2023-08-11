@@ -1,14 +1,10 @@
 import { Request, Response } from 'express';
-import { getRepository } from 'typeorm';
 import { StatusCodes } from 'http-status-codes';
 import logger from '../../../common/shared/logger';
 import { generateCardCvv, generateMasterCardNumber, generateVisaCardNumber, encryptCardPin, computeCardExpiryYear } from '../../../common/utils';
 import { DEFAULT_PIN } from '../../../common/shared/constant';
 import { CardType } from '../enums';
-import { Card } from '../entities/card.entity';
-import { findAccountById } from '../../account/repository/account.repository';
-import { findCompanyById } from '../../company/repository/company.repository';
-import { fetchCardContextResult } from '../types';
+import { fetchCardContext } from '../repository/card.repository';
 
 export const createCard = async (req: Request, res: Response) => {
   const { cardType, companyId, accountId } = req.body;
@@ -50,6 +46,7 @@ export const createCard = async (req: Request, res: Response) => {
       cardType,
       company,
       account,
+      createdBy: companyId,
     });
 
     await cardRepository.save(newCard);
@@ -65,19 +62,5 @@ export const createCard = async (req: Request, res: Response) => {
       message: error?.message,
       data: null,
     });
-  }
-};
-
-const fetchCardContext = async (accountId: string, companyId: string): Promise<fetchCardContextResult> => {
-  try {
-    const cardRepository = getRepository(Card);
-
-    const account = await findAccountById(accountId);
-    const company = await findCompanyById(companyId);
-
-    return { account, company, cardRepository };
-  } catch (error) {
-    logger.error('fetchCardContext failed', error);
-    throw error;
   }
 };

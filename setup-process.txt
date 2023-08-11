@@ -3,6 +3,7 @@ Setup process
 Nodejs - Typescript
 
 
+- try validation with class-validator
 - create entities and relationships
 - generate migrations
 

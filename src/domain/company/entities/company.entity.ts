@@ -1,4 +1,6 @@
 import { Entity, Column, OneToMany } from 'typeorm';
+import { IsEnum, IsString } from 'class-validator';
+
 import { BaseModel } from '../../../common/shared/model';
 import { TABLES } from '../../../common/shared/constant';
 import { Card } from '../../card/entities/card.entity';
@@ -8,12 +10,15 @@ import { Account } from '../../account/entities/account.entity';
 @Entity(TABLES.company)
 export class Company extends BaseModel {
   @Column()
+  @IsString()
   companyName: string;
 
   @Column()
+  @IsString()
   companyAddress: string;
 
   @Column()
+  @IsString()
   yearFounded: string;
 
   @Column({
@@ -21,6 +26,7 @@ export class Company extends BaseModel {
     enum: CompanyStatus,
     default: CompanyStatus.ACTIVE,
   })
+  @IsEnum(CompanyStatus)
   status: CompanyStatus;
 
   @OneToMany(() => Account, (account) => account.company)

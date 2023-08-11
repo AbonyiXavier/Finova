@@ -23,6 +23,7 @@ export const createAccount = async (req: Request, res: Response) => {
     const newAccount = accountRepository.create({
       accountNumber: acctNumber,
       company,
+      createdBy: companyId,
     });
 
     await accountRepository.save(newAccount);
