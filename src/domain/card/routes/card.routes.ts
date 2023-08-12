@@ -5,6 +5,7 @@ import {
   getActivatedCardsByCompanyId,
   getCardById,
   getPendingCardsByCompanyId,
+  setCardSpendingLimit,
   updateCardPin,
 } from '../controller/card.controller';
 
@@ -16,5 +17,6 @@ router.patch('/card/:cardId', activateCard);
 router.patch('/card/pin/:cardId', updateCardPin);
 router.get('/card/pending/:companyId', getPendingCardsByCompanyId);
 router.get('/card/activated/:companyId', getActivatedCardsByCompanyId);
+router.patch('/card/setlimit/:cardId', setCardSpendingLimit);
 
 export default router;

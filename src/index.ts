@@ -10,7 +10,7 @@ import companyRouter from './domain/company/routes';
 import cardRouter from './domain/card/routes';
 import accountRouter from './domain/account/routes';
 import logger from './common/shared/logger';
-import { expireCardsWhenDue } from './domain/card/repository/card.repository';
+import { expireCardsWhenDue, resetSpendLimitAndRemainingSpendWhenDue } from './domain/card/repository/card.repository';
 
 dotenv.config();
 
@@ -32,14 +32,14 @@ app.use('/api', accountRouter);
 
 /**
  * Cron job runs for 12:00 am
- * To update card status to expired when expiryDate is due
  *
  */
 const job = new CronJob(
   '0 0 * * *',
   async () => {
     logger.info('.....cron job running.....');
-    expireCardsWhenDue();
+    await expireCardsWhenDue();
+    await resetSpendLimitAndRemainingSpendWhenDue();
   },
   null,
   true,

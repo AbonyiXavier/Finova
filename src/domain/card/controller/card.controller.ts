@@ -8,6 +8,7 @@ import {
   encryptCardPin,
   computeCardExpiryYear,
   validatePin,
+  getSpendingLimitExpirationDate,
 } from '../../../common/utils';
 import { DEFAULT_PIN } from '../../../common/shared/constant';
 import { CardStatus, CardType } from '../enums';
@@ -21,6 +22,7 @@ import {
 } from '../repository/card.repository';
 import { findCompanyByIdRepository } from '../../company/repository/company.repository';
 import { PaginationArgs } from '../../../common/shared/types';
+import { setSpendingLimitConfig } from '../types';
 
 export const createCard = async (req: Request, res: Response) => {
   const { cardType, companyId, accountId } = req.body;
@@ -131,7 +133,7 @@ export const activateCard = async (req: Request, res: Response) => {
     // Update the card properties
     card.status = newData.status;
 
-    // Save the updated company
+    // Save the updated card
     const cardData = await cardRepository.save(card);
 
     return res.status(StatusCodes.OK).send({
@@ -182,7 +184,7 @@ export const updateCardPin = async (req: Request, res: Response) => {
     // Update the card properties
     card.pin = newData.pin;
 
-    // Save the updated company
+    // Save the updated card
     const cardData = await cardRepository.save(card);
 
     return res.status(StatusCodes.OK).send({
@@ -260,6 +262,47 @@ export const getActivatedCardsByCompanyId = async (req: Request, res: Response) 
     });
   } catch (error: any) {
     logger.error('getActivatedCardsByCompanyId failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const setCardSpendingLimit = async (req: Request, res: Response) => {
+  const { cardId } = req.params;
+  const { spendingLimit, spendingLimitInterval }: setSpendingLimitConfig = req.body;
+
+  try {
+    const { card, cardRepository } = await checkActiveCardRepository(cardId);
+
+    if (!card) {
+      return res.status(StatusCodes.NOT_FOUND).send({
+        status: false,
+        message: 'Invalid card id and can only set limit on activated card.',
+        data: null,
+      });
+    }
+
+    card.spendingLimit = spendingLimit;
+    card.spendingLimitInterval = spendingLimitInterval;
+
+    const spendingLimitExpirationDate = getSpendingLimitExpirationDate(spendingLimitInterval, card?.createdAt);
+
+    // Update spending limit date
+    card.spendingLimitDate = spendingLimitExpirationDate;
+
+    // Save the updated card
+    const cardData = await cardRepository.save(card);
+
+    return res.status(StatusCodes.CREATED).send({
+      status: false,
+      message: 'Card spending limit set successfully',
+      data: cardData,
+    });
+  } catch (error: any) {
+    logger.error('setCardSpendingLimit failed', error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       status: false,
       message: error?.message,

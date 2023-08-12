@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { Account } from '../account/entities/account.entity';
 import { Company } from '../company/entities/company.entity';
 import { Card } from './entities/card.entity';
+import { SpendingLimitInterval } from './enums';
 
 export type FetchCardContextRepositoryResult = {
   account: Account | undefined;
@@ -20,4 +21,9 @@ export type FetchCardResult = {
 export type CheckPendingResultConfig = {
   card: Card | undefined;
   cardRepository: Repository<Card>;
+};
+
+export type setSpendingLimitConfig = {
+  spendingLimit: number;
+  spendingLimitInterval: SpendingLimitInterval;
 };

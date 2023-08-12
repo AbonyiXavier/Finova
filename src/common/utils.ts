@@ -1,7 +1,8 @@
 import bcrypt from 'bcrypt';
-import { addYears } from 'date-fns';
-import { NUMBER_OF_CARD_EXPIRY_YEAR } from './shared/constant';
+import { addDays, addYears } from 'date-fns';
+import { NUMBER_OF_CARD_EXPIRY_YEAR, SET_LIMIT_EXPIRATION } from './shared/constant';
 import { checkExistingAccountNumberRepository } from '../domain/account/repository/account.repository';
+import { SpendingLimitInterval } from '../domain/card/enums';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const randomstring = require('randomstring');
@@ -56,6 +57,20 @@ const validatePin = (pin: string): boolean => {
 
   return pinRegex.test(pin);
 };
+const getSpendingLimitExpirationDate = (spendLimit: SpendingLimitInterval, createdAt: Date) => {
+  let endDate = addDays(new Date(createdAt), SET_LIMIT_EXPIRATION.DAILY_LIMIT);
+
+  if (spendLimit === SpendingLimitInterval.WEEKLY) {
+    endDate = addDays(new Date(createdAt), SET_LIMIT_EXPIRATION.WEEKLY_LIMIT);
+  }
+
+  if (spendLimit === SpendingLimitInterval.MONTHLY) {
+    endDate = addDays(new Date(createdAt), SET_LIMIT_EXPIRATION.MONTHLY_LIMIT);
+  }
+
+  return endDate;
+};
+
 export {
   generateVisaCardNumber,
   generateMasterCardNumber,
@@ -64,4 +79,5 @@ export {
   computeCardExpiryYear,
   generateCardCvv,
   validatePin,
+  getSpendingLimitExpirationDate,
 };

@@ -159,6 +159,9 @@ export const retrieveActivatedCardsRepository = async (
   }
 };
 
+/**
+ * To update card status to expired when expiryDate is due
+ */
 export const expireCardsWhenDue = async () => {
   try {
     const cardRepository = getRepository(Card);
@@ -175,14 +178,44 @@ export const expireCardsWhenDue = async () => {
     };
 
     await Promise.all(
-      cards.map((card) => {
-        // Update the card properties
+      cards.map(async (card) => {
+        // Update the card status properties
         card.status = newData.status;
 
-        // Save the updated company
-        cardRepository.save(card);
+        // Save the updated card
+        await cardRepository.save(card);
       }),
     );
+  } catch (error) {
+    logger.error('expireCardsWhenDue failed', error);
+    throw error;
+  }
+};
+
+/**
+ * To reset the remainingSpend and spendingLimit to the same amount when due
+ */
+export const resetSpendLimitAndRemainingSpendWhenDue = async () => {
+  try {
+    const cardRepository = getRepository(Card);
+
+    const cards = await cardRepository.find({
+      where: {
+        status: CardStatus.ACTIVATED,
+        spendingLimitDate: LessThanOrEqual(new Date()),
+      },
+    });
+
+    cards.forEach(async (card) => {
+      // Update the card properties
+      const newData = {
+        remainingSpend: card.spendingLimit,
+        spendingLimit: card.spendingLimit,
+      };
+
+      // Save the updated card
+      await cardRepository.update(card.id, newData);
+    });
   } catch (error) {
     logger.error('expireCardsWhenDue failed', error);
     throw error;
