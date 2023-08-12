@@ -1,4 +1,4 @@
-export type searchByInput = {
+export type SearchByInput = {
   searchText?: string;
 };
 

@@ -3,8 +3,21 @@ import { Account } from '../account/entities/account.entity';
 import { Company } from '../company/entities/company.entity';
 import { Card } from './entities/card.entity';
 
-export type fetchCardContextRepositoryResult = {
+export type FetchCardContextRepositoryResult = {
   account: Account | undefined;
   company: Company | undefined;
+  cardRepository: Repository<Card>;
+};
+
+export type FetchCardResult = {
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  nextPage: boolean;
+  cards: Card[];
+};
+
+export type CheckPendingResultConfig = {
+  card: Card | undefined;
   cardRepository: Repository<Card>;
 };

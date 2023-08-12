@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { Company } from './entities/company.entity';
 
-export type fetchCompanyResult = {
+export type FetchCompanyResult = {
   totalCount: number;
   totalPages: number;
   currentPage: number;

@@ -51,4 +51,17 @@ const computeCardExpiryYear = (date: Date) => {
   return addYears(new Date(todayDate), NUMBER_OF_CARD_EXPIRY_YEAR);
 };
 
-export { generateVisaCardNumber, generateMasterCardNumber, generateAccountNumber, encryptCardPin, computeCardExpiryYear, generateCardCvv };
+const validatePin = (pin: string): boolean => {
+  const pinRegex = /^\d{4}$/; // Regular expression for a 4-digit number
+
+  return pinRegex.test(pin);
+};
+export {
+  generateVisaCardNumber,
+  generateMasterCardNumber,
+  generateAccountNumber,
+  encryptCardPin,
+  computeCardExpiryYear,
+  generateCardCvv,
+  validatePin,
+};

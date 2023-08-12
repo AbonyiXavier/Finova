@@ -3,7 +3,7 @@ import { Account } from '../entities/account.entity';
 import { FetchResult } from '../types';
 import logger from '../../../common/shared/logger';
 import { findCompanyByIdRepository } from '../../company/repository/company.repository';
-import { searchByInput } from '../../../common/shared/types';
+import { SearchByInput } from '../../../common/shared/types';
 
 export const fetchCompanyAndAccountRepository = async (companyId: string): Promise<FetchResult> => {
   try {
@@ -47,7 +47,7 @@ export const checkExistingAccountNumberRepository = async (accountNumber: string
   }
 };
 
-export const retrieveAccountAndSearchRepository = async (accountId: string, searchInput?: searchByInput): Promise<Account | undefined> => {
+export const retrieveAccountAndSearchRepository = async (accountId: string, searchInput?: SearchByInput): Promise<Account | undefined> => {
   try {
     const accountRepository = getRepository(Account);
 

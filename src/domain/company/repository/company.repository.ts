@@ -1,8 +1,8 @@
 import { IsNull, getRepository } from 'typeorm';
 import { Company } from '../entities/company.entity';
 import logger from '../../../common/shared/logger';
-import { PaginationArgs, searchByInput } from '../../../common/shared/types';
-import { CompanyResultConfig, fetchCompanyResult } from '../types';
+import { PaginationArgs, SearchByInput } from '../../../common/shared/types';
+import { CompanyResultConfig, FetchCompanyResult } from '../types';
 import { CompanyStatus } from '../enums';
 
 export const checkDuplicateCompanyNameRepository = async (companyName: string): Promise<Company | undefined> => {
@@ -35,7 +35,7 @@ export const findCompanyByIdRepository = async (companyId: string): Promise<Comp
   }
 };
 
-export const retrieveCompanyAndSearchRepository = async (companyId: string, searchInput?: searchByInput): Promise<Company | undefined> => {
+export const retrieveCompanyAndSearchRepository = async (companyId: string, searchInput?: SearchByInput): Promise<Company | undefined> => {
   try {
     const companyRepository = getRepository(Company);
 
@@ -68,8 +68,8 @@ export const retrieveCompanyAndSearchRepository = async (companyId: string, sear
 
 export const retrieveCompaniesPaginatedAndSearchRepository = async (
   paginationArgs: PaginationArgs,
-  searchInput?: searchByInput,
-): Promise<fetchCompanyResult> => {
+  searchInput?: SearchByInput,
+): Promise<FetchCompanyResult> => {
   const { limit, offset } = paginationArgs;
 
   try {
