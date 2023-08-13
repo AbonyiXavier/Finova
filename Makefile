@@ -9,6 +9,3 @@ ts-build:
 
 lint:
 	npm run lint
-
-revert:
-	npm run typeorm migration:revert
