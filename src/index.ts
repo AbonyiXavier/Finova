@@ -9,6 +9,7 @@ import { CronJob } from 'cron';
 import companyRouter from './domain/company/routes';
 import cardRouter from './domain/card/routes';
 import accountRouter from './domain/account/routes';
+import transactionRouter from './domain/transaction/routes';
 import logger from './common/shared/logger';
 import { expireCardsWhenDue, resetSpendLimitAndRemainingSpendWhenDue } from './domain/card/repository/card.repository';
 
@@ -29,6 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api', companyRouter);
 app.use('/api', cardRouter);
 app.use('/api', accountRouter);
+app.use('/api', transactionRouter);
 
 /**
  * Cron job runs for 12:00 am

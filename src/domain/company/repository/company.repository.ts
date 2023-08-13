@@ -35,7 +35,7 @@ export const findCompanyByIdRepository = async (companyId: string): Promise<Comp
   }
 };
 
-export const retrieveCompanyAndSearchRepository = async (companyId: string, searchInput?: SearchByInput): Promise<Company | undefined> => {
+export const retrieveCompanyRepository = async (companyId: string, searchInput?: SearchByInput): Promise<Company | undefined> => {
   try {
     const companyRepository = getRepository(Company);
 
@@ -66,10 +66,7 @@ export const retrieveCompanyAndSearchRepository = async (companyId: string, sear
   }
 };
 
-export const retrieveCompaniesPaginatedAndSearchRepository = async (
-  paginationArgs: PaginationArgs,
-  searchInput?: SearchByInput,
-): Promise<FetchCompanyResult> => {
+export const retrieveCompaniesRepository = async (paginationArgs: PaginationArgs, searchInput?: SearchByInput): Promise<FetchCompanyResult> => {
   const { limit, offset } = paginationArgs;
 
   try {
@@ -111,7 +108,7 @@ export const retrieveCompaniesPaginatedAndSearchRepository = async (
       companies: items,
     };
   } catch (error) {
-    logger.error('retrieveCompaniesPaginatedAndSearchRepository failed', error);
+    logger.error('retrieveCompaniesRepository failed', error);
     throw error;
   }
 };

@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import logger from '../../../common/shared/logger';
 import { generateAccountNumber } from '../../../common/utils';
-import { retrieveAccountAndSearchRepository, fetchCompanyAndAccountRepository, findAccountByIdRepository } from '../repository/account.repository';
+import { retrieveAccountRepository, fetchCompanyAndAccountRepository, findAccountByIdRepository } from '../repository/account.repository';
 
 export const createAccount = async (req: Request, res: Response) => {
   const { companyId } = req.body;
@@ -59,7 +59,7 @@ export const getAccountById = async (req: Request, res: Response) => {
       });
     }
 
-    const account = await retrieveAccountAndSearchRepository(accountId, searchInput);
+    const account = await retrieveAccountRepository(accountId, searchInput);
 
     return res.status(StatusCodes.OK).send({
       status: true,

@@ -12,8 +12,8 @@ import {
   checkDuplicateCompanyNameRepository,
   fetchActiveCompanyRepository,
   findCompanyByIdRepository,
-  retrieveCompaniesPaginatedAndSearchRepository,
-  retrieveCompanyAndSearchRepository,
+  retrieveCompaniesRepository,
+  retrieveCompanyRepository,
 } from '../repository/company.repository';
 import { CurrencyType } from '../../account/enums';
 import { TransactionStatus, TransactionType } from '../../transaction/enums';
@@ -70,7 +70,7 @@ export const createCompany = async (req: Request, res: Response) => {
       // create copy of transaction for account created with transactionType : credit
       const transactionPayload = {
         amount: account?.balance,
-        message: `Account was credited with sum of ${DEFAULT_CREDITED_BALANCE}${CurrencyType.KR} `,
+        message: `Account was credited with sum of ${DEFAULT_CREDITED_BALANCE}${CurrencyType.KR}`,
         status: TransactionStatus.SUCCESS,
         type: TransactionType.CREDIT,
         card,
@@ -112,7 +112,7 @@ export const getCompanyById = async (req: Request, res: Response) => {
       });
     }
 
-    const companyData = await retrieveCompanyAndSearchRepository(companyId, searchInput);
+    const companyData = await retrieveCompanyRepository(companyId, searchInput);
 
     return res.status(StatusCodes.OK).send({
       status: true,
@@ -135,12 +135,12 @@ export const fetchCompanies = async (req: Request, res: Response) => {
   const paginationArgs = { limit, offset } as unknown as PaginationArgs;
 
   try {
-    const company = await retrieveCompaniesPaginatedAndSearchRepository(paginationArgs, searchInput);
+    const companies = await retrieveCompaniesRepository(paginationArgs, searchInput);
 
     return res.status(StatusCodes.OK).send({
       status: true,
       message: 'Company fetched successfully',
-      data: company,
+      data: companies,
     });
   } catch (error: any) {
     logger.error('getCompanyById failed', error);

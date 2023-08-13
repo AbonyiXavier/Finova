@@ -1,10 +1,8 @@
 Setup process
 
-Nodejs - Typescript
+Nodejs - Typescript - TypeOrm - Postgres
 
 
-- try validation with class-validator
-- create entities and relationships
 - generate migrations
 
 
@@ -18,6 +16,7 @@ Done block
 - have a dist folder
 - have a jest config
 - have a Makefile
+- try validation with class-validator
 
 
 - project setup ideas
@@ -26,20 +25,16 @@ Done block
      - domain
         - account  -- has many cards[] -- belongs to a company
             - repository   
-               - interfaces
-            - services
+               - types
         - card  -- belongs to account --- belongs to company
              - repository   
-               - interfaces
-             - services
+               - types
         - company  --- has many accounts[] --- has many cards[]
               - repository   
-               - interfaces
-              - services
+               - types
         - transaction  --- belongs to card  --- belongs to account
               - repository   
-               - interfaces
-              - services
+               - types
      - common
          - shared folder
            - logger.ts
