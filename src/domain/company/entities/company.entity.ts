@@ -15,11 +15,19 @@ export class Company extends BaseModel {
 
   @Column()
   @IsString()
+  email: string;
+
+  @Column()
+  @IsString()
   companyAddress: string;
 
   @Column()
   @IsString()
   yearFounded: string;
+
+  @Column()
+  @IsString()
+  password: string;
 
   @Column({
     type: 'enum',

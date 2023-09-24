@@ -57,6 +57,7 @@ const validatePin = (pin: string): boolean => {
 
   return pinRegex.test(pin);
 };
+
 const getSpendingLimitExpirationDate = (spendLimit: SpendingLimitInterval, createdAt: Date) => {
   let endDate = addDays(new Date(createdAt), SET_LIMIT_EXPIRATION.DAILY_LIMIT);
 

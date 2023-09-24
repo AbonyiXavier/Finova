@@ -5,7 +5,7 @@ import { PaginationArgs, SearchByInput } from '../../../common/shared/types';
 import { CompanyResultConfig, FetchCompanyResult } from '../types';
 import { CompanyStatus } from '../enums';
 
-export const checkDuplicateCompanyNameRepository = async (companyName: string): Promise<Company | undefined> => {
+export const findByCompanyNameRepository = async (companyName: string): Promise<Company | undefined> => {
   try {
     const companyRepository = getRepository(Company);
 
@@ -15,7 +15,22 @@ export const checkDuplicateCompanyNameRepository = async (companyName: string): 
 
     return existingCompany;
   } catch (error) {
-    logger.error('checkDuplicateCompanyNameRepository failed', error);
+    logger.error('findCompanyNameRepository failed', error);
+    throw error;
+  }
+};
+
+export const findByEmailRepository = async (email: string): Promise<Company | undefined> => {
+  try {
+    const companyRepository = getRepository(Company);
+
+    const existingCompany = await companyRepository.findOne({
+      where: { email },
+    });
+
+    return existingCompany;
+  } catch (error) {
+    logger.error('findEmailRepository failed', error);
     throw error;
   }
 };
@@ -29,6 +44,17 @@ export const findCompanyByIdRepository = async (companyId: string): Promise<Comp
     });
 
     return company;
+  } catch (error) {
+    logger.error('findCompanyByIdRepository failed', error);
+    throw error;
+  }
+};
+
+export const saveCompanyToDatabaseRepository = async (company: Company): Promise<void> => {
+  try {
+    const companyRepository = getRepository(Company);
+
+    await companyRepository.save(company);
   } catch (error) {
     logger.error('findCompanyByIdRepository failed', error);
     throw error;
