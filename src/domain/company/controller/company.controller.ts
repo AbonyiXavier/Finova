@@ -9,28 +9,42 @@ import { DEFAULT_CREDITED_BALANCE, DEFAULT_PIN } from '../../../common/shared/co
 import { Card } from '../../card/entities/card.entity';
 import { CardType } from '../../card/enums';
 import {
-  checkDuplicateCompanyNameRepository,
+  findByCompanyNameRepository,
+  findByEmailRepository,
   fetchActiveCompanyRepository,
   findCompanyByIdRepository,
   retrieveCompaniesRepository,
   retrieveCompanyRepository,
+  saveCompanyToDatabaseRepository,
 } from '../repository/company.repository';
 import { CurrencyType } from '../../account/enums';
 import { TransactionStatus, TransactionType } from '../../transaction/enums';
 import { Transaction } from '../../transaction/entities/transaction.entity';
 import { PaginationArgs } from '../../../common/shared/types';
 import { CompanyStatus } from '../enums';
+import { comparePassword, hashPassword } from '../../../config/bcrypt';
+import { generateJwtToken } from '../../../config/jwt';
 
-export const createCompany = async (req: Request, res: Response) => {
-  const { companyName, companyAddress, yearFounded } = req.body;
+export const signup = async (req: Request, res: Response) => {
+  const { companyName, email, companyAddress, yearFounded, password } = req.body;
 
   try {
-    const existingCompany = await checkDuplicateCompanyNameRepository(companyName);
+    const existingCompanyName = await findByCompanyNameRepository(companyName);
 
-    if (existingCompany) {
+    if (existingCompanyName) {
       return res.status(StatusCodes.CONFLICT).send({
         status: false,
         message: 'Company with the same name already exists.',
+        data: null,
+      });
+    }
+
+    const existingEmail = await findByEmailRepository(email);
+
+    if (existingEmail) {
+      return res.status(StatusCodes.CONFLICT).send({
+        status: false,
+        message: 'Email already in use.',
         data: null,
       });
     }
@@ -39,9 +53,12 @@ export const createCompany = async (req: Request, res: Response) => {
     const accountNumber = await generateAccountNumber();
 
     await getConnection().transaction(async (manager) => {
-      const payload = { companyName, companyAddress, yearFounded };
+      const hashedPassword = await hashPassword(password);
+      const payload = { companyName, email, companyAddress, yearFounded, password: hashedPassword };
+
       const company = await manager.save(Company, payload);
       const createdBy = company?.id;
+      const token = await generateJwtToken({ createdBy, email });
 
       // create account with a default balance of 12000 kr
       const accountPayload = {
@@ -82,12 +99,107 @@ export const createCompany = async (req: Request, res: Response) => {
 
       return res.status(StatusCodes.CREATED).send({
         status: true,
-        message: 'Company created successfully',
-        data: company,
+        message: 'Signup successfully',
+        data: { ...company, accessToken: token },
       });
     });
   } catch (error: any) {
-    logger.error('createCompany failed', error);
+    logger.error('signup failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const login = async (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  try {
+    const company = await findByEmailRepository(email);
+
+    if (!company) {
+      return res.status(StatusCodes.UNAUTHORIZED).send({
+        status: false,
+        message: 'Wrong Email or Password combination.',
+        data: null,
+      });
+    }
+
+    const isPasswordMatch = await comparePassword(company?.password, password);
+
+    if (!isPasswordMatch) {
+      return res.status(StatusCodes.UNAUTHORIZED).send({
+        status: false,
+        message: 'Wrong Email or Password combination',
+        data: null,
+      });
+    }
+
+    const createdBy = company?.id;
+    const token = await generateJwtToken({ createdBy, email });
+
+    return res.status(StatusCodes.CREATED).send({
+      status: true,
+      message: 'Login successfully',
+      data: { ...company, accessToken: token },
+    });
+  } catch (error: any) {
+    logger.error('login failed', error);
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
+      status: false,
+      message: error?.message,
+      data: null,
+    });
+  }
+};
+
+export const changePassword = async (req: Request, res: Response) => {
+  const { oldPassword, newPassword } = req.body;
+  const companyId = req.currentCompany?.id;
+
+  try {
+    const company = await findCompanyByIdRepository(companyId);
+
+    if (!company) {
+      return res.status(StatusCodes.NOT_FOUND).send({
+        status: false,
+        message: 'Company not found.',
+        data: null,
+      });
+    }
+
+    if (oldPassword === newPassword) {
+      return res.status(StatusCodes.BAD_REQUEST).send({
+        status: false,
+        message: `Please you can't use your old password, please change`,
+        data: null,
+      });
+    }
+
+    const isPasswordMatch = await comparePassword(company?.password, oldPassword);
+
+    if (!isPasswordMatch) {
+      return res.status(StatusCodes.UNAUTHORIZED).send({
+        status: false,
+        message: 'You entered an incorrect password.',
+        data: null,
+      });
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+    company.password = hashedPassword;
+
+    await saveCompanyToDatabaseRepository(company);
+
+    return res.status(StatusCodes.OK).send({
+      status: true,
+      message: 'Password updated successfully.',
+      data: company,
+    });
+  } catch (error: any) {
+    logger.error('changePassword failed', error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       status: false,
       message: error?.message,
@@ -157,7 +269,7 @@ export const updateCompany = async (req: Request, res: Response) => {
   const { companyName, companyAddress, yearFounded } = req.body;
 
   try {
-    const existingCompany = await checkDuplicateCompanyNameRepository(companyName);
+    const existingCompany = await findByCompanyNameRepository(companyName);
 
     if (existingCompany) {
       return res.status(StatusCodes.CONFLICT).send({

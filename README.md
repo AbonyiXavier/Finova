@@ -1,5 +1,7 @@
 # Finova
 
+Finova represent finance and innovation which signifies a forward-thinking and innovative platform for financial management within a corporate or enterprise context
+
 [![npm version](https://badge.fury.io/js/express.svg)](https://badge.fury.io/js/express)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
@@ -86,10 +88,18 @@ Transaction Entity Extends BaseModel
 - account (Many to One relationship)
 
 
+
+### Entity Relationship Diagram(ER)
+
+- ER diagram of the project is available on ![ER-Digram-Finova](https://github.com/AbonyiXavier/Backend-Recruitment/assets/49367987/cda0b2e8-fa9e-40bd-9580-35b609180ba2)
+
+
 ### Features Implemented
 
 <<<< Company Functionality >>>>
-- Create Company.
+- Signup
+- Login
+- Change of password
 - Get company
 - Get companies(paginated and search)
 - Update company's information
@@ -159,7 +169,9 @@ How to run all tests locally
 
 | Endpoint                       |           Functionality            | HTTP method |
 | ------------------------------ | :--------------------------------: | ----------: |
-| /api/v1/company/create        | Create a company |        POST |
+| /api/v1/signup        | Signup a company |        POST |
+| /api/v1/login        | login  |        POST |
+| /api/v1/company/changepassword        | Change of password |        PATCH |
 | /api/v1/company                |          Get companies           |         GET |
 | /api/v1/company/:companyId            |        Get company        |         GET |
 | /api/v1/company/:companyId    |     Update company information     |       PATCH |
@@ -193,8 +205,6 @@ Each response will be returned with one of the following HTTP status codes:
 - Introduce a Reward System: Implement a rewards program where users can earn redeemable points based on their card usage frequency
 
 - Notification for Expiring Cards: Set up a notification system to proactively remind users of their card's upcoming expiration. Notifications can be sent via push notifications or email alerts
-
-- Enhance Authentication and Authorization: Strengthen the security of the application by implementing a robust authentication and authorization process to ensure secure access and data protection.
 
 - Enable Account Funding Options: Provide users with the ability to fund their accounts through convenient methods.
 

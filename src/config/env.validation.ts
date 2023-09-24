@@ -11,6 +11,8 @@ const envVariables = Joi.object()
     NODE_ENV: Joi.string().valid('production', 'development', 'staging').required(),
     PORT: Joi.number().positive().required(),
     DATABASE_CREDENTIALS: Joi.string().required().description('DATABASE_CREDENTIALS'),
+    JWT_SECRET_KEY: Joi.string().required().description('JWT_SECRET_KEY'),
+    JWT_EXPIRE_TIME: Joi.string().required().description('JWT_EXPIRE_TIME'),
   })
   .unknown();
 
@@ -24,4 +26,6 @@ export default {
   NODE_ENV: envVariable.NODE_ENV,
   PORT: envVariable.PORT,
   DATABASE_CREDENTIALS: envVariable.DATABASE_CREDENTIALS,
+  JWT_SECRET_KEY: envVariable.JWT_SECRET_KEY,
+  JWT_EXPIRE_TIME: envVariable.JWT_EXPIRE_TIME,
 };

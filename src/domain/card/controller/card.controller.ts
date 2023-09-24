@@ -25,7 +25,9 @@ import { PaginationArgs } from '../../../common/shared/types';
 import { setSpendingLimitConfig } from '../types';
 
 export const createCard = async (req: Request, res: Response) => {
-  const { cardType, companyId, accountId } = req.body;
+  const { cardType, accountId } = req.body;
+
+  const companyId = req.currentCompany.id;
 
   try {
     const encryptedCardPin = await encryptCardPin(DEFAULT_PIN);
@@ -40,18 +42,10 @@ export const createCard = async (req: Request, res: Response) => {
 
     const { account, company, cardRepository } = await fetchCardContextRepository(accountId, companyId);
 
-    if (!account) {
+    if (account?.createdBy !== companyId) {
       return res.status(StatusCodes.NOT_FOUND).send({
         status: false,
         message: 'Account not found.',
-        data: null,
-      });
-    }
-
-    if (!company) {
-      return res.status(StatusCodes.NOT_FOUND).send({
-        status: false,
-        message: 'Company not found.',
         data: null,
       });
     }
@@ -297,7 +291,7 @@ export const setCardSpendingLimit = async (req: Request, res: Response) => {
     const cardData = await cardRepository.save(card);
 
     return res.status(StatusCodes.CREATED).send({
-      status: false,
+      status: true,
       message: 'Card spending limit set successfully',
       data: cardData,
     });
