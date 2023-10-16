@@ -5,7 +5,7 @@ import {
   generateCardCvv,
   generateMasterCardNumber,
   generateVisaCardNumber,
-  encryptCardPin,
+  hashCardPin,
   computeCardExpiryYear,
   validatePin,
   getSpendingLimitExpirationDate,
@@ -30,7 +30,7 @@ export const createCard = async (req: Request, res: Response) => {
   const companyId = req.currentCompany.id;
 
   try {
-    const encryptedCardPin = await encryptCardPin(DEFAULT_PIN);
+    const encryptedCardPin = await hashCardPin(DEFAULT_PIN);
     const cardNumberGenerators = {
       [CardType.MASTER]: generateMasterCardNumber,
       [CardType.VISA]: generateVisaCardNumber,
@@ -150,7 +150,7 @@ export const updateCardPin = async (req: Request, res: Response) => {
   const { pin } = req.body;
 
   try {
-    const encryptedCardPin = await encryptCardPin(pin);
+    const encryptedCardPin = await hashCardPin(pin);
     const { card, cardRepository } = await checkActiveCardRepository(cardId);
 
     if (!card) {

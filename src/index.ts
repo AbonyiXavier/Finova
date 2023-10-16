@@ -13,6 +13,8 @@ import transactionRouter from './domain/transaction/routes';
 import logger from './common/shared/logger';
 import { expireCardsWhenDue, resetSpendLimitAndRemainingSpendWhenDue } from './domain/card/repository/card.repository';
 
+import "reflect-metadata";
+
 dotenv.config();
 
 require('./config/env.validation');
@@ -26,6 +28,8 @@ app.use(morgan('dev'));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+// app.use(validationMiddleware([]));
+
 
 app.use('/api', companyRouter);
 app.use('/api', cardRouter);
@@ -38,10 +42,16 @@ app.use('/api', transactionRouter);
  */
 const job = new CronJob(
   '0 0 * * *',
-  async () => {
-    logger.info('.....cron job running.....');
-    await expireCardsWhenDue();
-    await resetSpendLimitAndRemainingSpendWhenDue();
+  () => {
+    (async () => {
+      logger.info('.....cron job running.....');
+      try {
+        await Promise.all([expireCardsWhenDue(), resetSpendLimitAndRemainingSpendWhenDue()]);
+      } catch (error) {
+        // Handle errors here
+        logger.error('Cron job error:', error);
+      }
+    })();
   },
   null,
   true,
@@ -53,7 +63,7 @@ job.start();
 app.get('/', (req: Request, res: Response) => {
   res.status(StatusCodes.OK).json({
     status: true,
-    message: 'Qred Api 👈👈',
+    message: 'Finova Api 👈👈',
   });
 });
 

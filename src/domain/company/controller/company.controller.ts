@@ -4,7 +4,7 @@ import { StatusCodes } from 'http-status-codes';
 import logger from '../../../common/shared/logger';
 import { Company } from '../entities/company.entity';
 import { Account } from '../../account/entities/account.entity';
-import { computeCardExpiryYear, encryptCardPin, generateAccountNumber, generateCardCvv, generateMasterCardNumber } from '../../../common/utils';
+import { computeCardExpiryYear, hashCardPin, generateAccountNumber, generateCardCvv, generateMasterCardNumber } from '../../../common/utils';
 import { DEFAULT_CREDITED_BALANCE, DEFAULT_PIN } from '../../../common/shared/constant';
 import { Card } from '../../card/entities/card.entity';
 import { CardType } from '../../card/enums';
@@ -49,12 +49,13 @@ export const signup = async (req: Request, res: Response) => {
       });
     }
 
-    const encryptedCardPin = await encryptCardPin(DEFAULT_PIN);
+    const hashedCardPin = await hashCardPin(DEFAULT_PIN);
     const accountNumber = await generateAccountNumber();
 
     await getConnection().transaction(async (manager) => {
-      const hashedPassword = await hashPassword(password);
-      const payload = { companyName, email, companyAddress, yearFounded, password: hashedPassword };
+      const hashedPass = await hashPassword(password);
+      const payload = { companyName, email, companyAddress, yearFounded, password: hashedPass };
+      
 
       const company = await manager.save(Company, payload);
       const createdBy = company?.id;
@@ -75,7 +76,7 @@ export const signup = async (req: Request, res: Response) => {
         cardNumber: generateMasterCardNumber(),
         expiryDate: computeCardExpiryYear(company?.createdAt),
         cvv: generateCardCvv(),
-        pin: encryptedCardPin,
+        pin: hashedCardPin,
         cardType: CardType.MASTER,
         company,
         account,
@@ -104,6 +105,8 @@ export const signup = async (req: Request, res: Response) => {
       });
     });
   } catch (error: any) {
+    console.log('company error', error);
+    
     logger.error('signup failed', error);
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).send({
       status: false,

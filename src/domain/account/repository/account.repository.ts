@@ -98,7 +98,7 @@ export const findAccountNumberRepository = async (accountNumber: string): Promis
 };
 
 export const updateSenderAndReceiverBalanceAndCreateTransaction = async (props: UpdateBalanceProps): Promise<Account | undefined> => {
-  const { accountId, accountNumber, senderBalance, receiverBalance, amount, message } = props;
+  const { accountId, accountNumber, senderBalance, receiverBalance, amount, message } = props;  
   const newSenderBalance = Number(senderBalance) - Number(amount);
   const newReceiverBalance = Number(receiverBalance) + Number(amount);
 

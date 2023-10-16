@@ -23,7 +23,7 @@ export const validateCompanyToken = async (req: Request, res: Response, next: Ne
     .unknown(true);
   try {
     await schema.validateAsync(req.headers);
-    const [, token] = authorization!.split('Bearer ');
+    const [, token] = authorization.split('Bearer ');
     const company: any = verifyJwtToken(token);
 
     // Get company data from the token

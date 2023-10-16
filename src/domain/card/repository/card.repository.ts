@@ -177,15 +177,11 @@ export const expireCardsWhenDue = async () => {
       status: CardStatus.EXPIRED,
     };
 
-    await Promise.all(
-      cards.map(async (card) => {
-        // Update the card status properties
-        card.status = newData.status;
+    for (const card of cards) {
+      card.status = newData.status;
+      await cardRepository.save(card);
+    }
 
-        // Save the updated card
-        await cardRepository.save(card);
-      }),
-    );
   } catch (error) {
     logger.error('expireCardsWhenDue failed', error);
     throw error;
@@ -206,18 +202,19 @@ export const resetSpendLimitAndRemainingSpendWhenDue = async () => {
       },
     });
 
-    cards.forEach(async (card) => {
-      // Update the card properties
+    for (const card of cards) {
       const newData = {
         remainingSpend: card.spendingLimit,
         spendingLimit: card.spendingLimit,
       };
-
+    
       // Save the updated card
       await cardRepository.update(card.id, newData);
-    });
+    }
+    
   } catch (error) {
-    logger.error('expireCardsWhenDue failed', error);
+    logger.error('resetSpendLimitAndRemainingSpendWhenDue failed', error);
     throw error;
   }
 };
+

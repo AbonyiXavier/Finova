@@ -1,6 +1,6 @@
 import express from 'express';
 import { createAccount, getAccountById } from '../controller/account.controller';
-import { validateCompanyToken } from '../../../common/middlewares/verifyToken';
+import { validateCompanyToken } from '../../../common/middleware/verifyToken';
 
 const router = express.Router();
 

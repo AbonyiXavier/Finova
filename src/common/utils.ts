@@ -42,9 +42,9 @@ const generateAccountNumber = async () => {
   return accountNumberGenerated;
 };
 
-const encryptCardPin = async (pin: string) => {
-  const encryptPin = await bcrypt.hash(pin, bcrypt.genSaltSync(10));
-  return encryptPin;
+const hashCardPin = async (pin: string) => {
+  const hashPin = await bcrypt.hash(pin, bcrypt.genSaltSync(10));
+  return hashPin;
 };
 
 const computeCardExpiryYear = (date: Date) => {
@@ -76,7 +76,7 @@ export {
   generateVisaCardNumber,
   generateMasterCardNumber,
   generateAccountNumber,
-  encryptCardPin,
+  hashCardPin,
   computeCardExpiryYear,
   generateCardCvv,
   validatePin,
