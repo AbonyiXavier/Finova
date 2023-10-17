@@ -72,6 +72,8 @@ Card Entity Extends BaseModel
 
 Company Entity Extends BaseModel
 - companyName
+- email
+- password
 - companyAddress
 - yearFounded
 - status
