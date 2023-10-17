@@ -130,6 +130,8 @@ Transaction Entity Extends BaseModel
 
 # Getting Started
 
+### Initial sketch mobile app view
+![Initial sketch mobile app view](./docs/initial-sketch-mobile-view.png)
 ### Dependencies
 
 This project uses [Express.js](https://expressjs.com/) v4.18.2 It has the following dependencies:
@@ -206,9 +208,11 @@ Each response will be returned with one of the following HTTP status codes:
 
 - Introduce a Reward System: Implement a rewards program where users can earn redeemable points based on their card usage frequency
 
+- Implement a notification system during the sign-up process to generate activation codes. This additional layer of security ensures that users receive codes before logging in, effectively preventing potential bot users and enhancing overall security measures.
+
 - Notification for Expiring Cards: Set up a notification system to proactively remind users of their card's upcoming expiration. Notifications can be sent via push notifications or email alerts
 
-- Enable Account Funding Options: Provide users with the ability to fund their accounts through convenient methods.
+- Enable Account Funding Options: Provide users with the ability to fund their accounts or make transfers through convenient methods.(payment integration)
 
 - Diversify Account Categories: Introduce versatility in account classifications with distinct types to accommodating both private and savings accounts.
     
