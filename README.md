@@ -130,8 +130,6 @@ Transaction Entity Extends BaseModel
 
 # Getting Started
 
-### Initial sketch mobile app view
-![Initial sketch mobile app view](./docs/initial-sketch-mobile-view.png)
 ### Dependencies
 
 This project uses [Express.js](https://expressjs.com/) v4.18.2 It has the following dependencies:
