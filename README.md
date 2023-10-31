@@ -155,7 +155,7 @@ cp .env.sample .env
 ```
 
 ### Using the Makefile for Testing
-How to run all tests locally
+How to run all tests locally 
 
 1. `make install` - Installs dependencies.
 2. `make dev` - Run the server
